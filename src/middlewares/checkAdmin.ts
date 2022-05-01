@@ -1,0 +1,24 @@
+import express from "express";
+import dotenv from "dotenv";
+import jwt from "jsonwebtoken";
+
+dotenv.config();
+
+const checkAdmin = (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    if (req.body.token) {
+        try {
+            const decode = jwt.verify(req.body.token, process.env.JWT_SECRET as string) as jwt.JwtPayload;
+            if (decode && decode.isAdmin) {
+                next();
+            } else {
+                res.status(403).json({ message: "access denied" });
+            }
+        } catch (_) {
+            res.status(403).json({ message: "access denied" });
+        }
+    } else {
+        res.status(401).json({ message: "token needed" });
+    }
+};
+
+export default checkAdmin;

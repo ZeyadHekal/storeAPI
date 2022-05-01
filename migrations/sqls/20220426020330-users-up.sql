@@ -1,0 +1,1 @@
+CREATE TABLE users (id SERIAL PRIMARY KEY, username VARCHAR(100), "firstName" VARCHAR(30), "lastName" VARCHAR(30), "password_hash" VARCHAR(200), "isAdmin" BOOLEAN DEFAULT false);
