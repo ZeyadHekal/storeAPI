@@ -41,19 +41,19 @@ describe("Tests checkOwnerOrAdmin Middleware", () => {
     });
 
     it("works when given another user.", async () => {
-        const res = await request.get("/middleware/checkOwnerOrAdmin/" + myUser.id).send({ token: otherJwt });
+        const res = await request.get("/middleware/checkOwnerOrAdmin/" + myUser.id).set("Authorization", "Bearer " + otherJwt);
         expect(res.statusCode).toBe(403);
         expect(res.body).toEqual({ message: "access denied" });
     });
 
     it("works given a correct token for the owner user.", async () => {
-        const res = await request.get("/middleware/checkOwnerOrAdmin/" + myUser.id).send({ token: jwt, id: myUser.id });
+        const res = await request.get("/middleware/checkOwnerOrAdmin/" + myUser.id).set("Authorization", "Bearer " + jwt).send({ id: myUser.id });
         expect(res.statusCode).toBe(200);
         expect(res.body).toEqual({ message: "success" });
     });
 
     it("works given a correct token for admin user.", async () => {
-        const res = await request.get("/middleware/checkOwnerOrAdmin/" + myUser.id).send({ token: adminJwt, id: myUser.id });
+        const res = await request.get("/middleware/checkOwnerOrAdmin/" + myUser.id).set("Authorization", "Bearer " + adminJwt).send({ id: myUser.id });
         expect(res.statusCode).toBe(200);
         expect(res.body).toEqual({ message: "success" });
     });

@@ -14,7 +14,8 @@ const order_products = new OrderProductsStore();
 const create = async (req: Request, res: Response) => {
     try {
         // JWT is guranteed to exist and be verified as it was processed by a middleware
-        const myJwt = jwt.verify(req.body.token, process.env.JWT_SECRET as jwt.Secret) as jwt.JwtPayload;
+        const auth = req.headers.authorization as string;
+        const myJwt = jwt.verify(auth.split(" ")[1], process.env.JWT_SECRET as jwt.Secret) as jwt.JwtPayload;
         const myOrder = await orders.create(parseInt(myJwt.id));
         res.status(200).json({ message: "success", order: myOrder });
     } catch (error) {
@@ -25,7 +26,8 @@ const create = async (req: Request, res: Response) => {
 const index = async (req: Request, res: Response) => {
     try {
         // JWT is guranteed to exist and be verified as it was processed by a middleware
-        const myJwt = jwt.verify(req.body.token, process.env.JWT_SECRET as jwt.Secret) as jwt.JwtPayload;
+        const auth = req.headers.authorization as string;
+        const myJwt = jwt.verify(auth.split(" ")[1], process.env.JWT_SECRET as jwt.Secret) as jwt.JwtPayload;
         const myOrders = await orders.index(myJwt.isAdmin ? undefined : myJwt.id);
         res.status(200).json(myOrders);
     } catch (error) {
@@ -36,7 +38,8 @@ const index = async (req: Request, res: Response) => {
 const show = async (req: Request, res: Response) => {
     try {
         // JWT is guranteed to exist and be verified as it was processed by a middleware
-        const myJwt = jwt.verify(req.body.token, process.env.JWT_SECRET as jwt.Secret) as jwt.JwtPayload;
+        const auth = req.headers.authorization as string;
+        const myJwt = jwt.verify(auth.split(" ")[1], process.env.JWT_SECRET as jwt.Secret) as jwt.JwtPayload;
         const myOrder = await orders.show(parseInt(req.params.id));
         if (myOrder) {
             if (myJwt.isAdmin || myOrder.user_id == myJwt.id) {
@@ -55,7 +58,8 @@ const show = async (req: Request, res: Response) => {
 const _delete = async (req: Request, res: Response) => {
     try {
         // JWT is guranteed to exist and be verified as it was processed by a middleware
-        const myJwt = jwt.verify(req.body.token, process.env.JWT_SECRET as jwt.Secret) as jwt.JwtPayload;
+        const auth = req.headers.authorization as string;
+        const myJwt = jwt.verify(auth.split(" ")[1], process.env.JWT_SECRET as jwt.Secret) as jwt.JwtPayload;
         const myOrder = await orders.show(parseInt(req.params.id));
         if (myOrder) {
             if (myJwt.isAdmin || myOrder.user_id == myJwt.id) {
@@ -75,7 +79,8 @@ const _delete = async (req: Request, res: Response) => {
 const complete = async (req: Request, res: Response) => {
     try {
         // JWT is guranteed to exist and be verified as it was processed by a middleware
-        const myJwt = jwt.verify(req.body.token, process.env.JWT_SECRET as jwt.Secret) as jwt.JwtPayload;
+        const auth = req.headers.authorization as string;
+        const myJwt = jwt.verify(auth.split(" ")[1], process.env.JWT_SECRET as jwt.Secret) as jwt.JwtPayload;
         const myOrder = await orders.show(parseInt(req.params.id));
         if (myOrder) {
             if (myJwt.isAdmin || myOrder.user_id == myJwt.id) {
@@ -95,7 +100,8 @@ const complete = async (req: Request, res: Response) => {
 const indexProducts = async (req: Request, res: Response) => {
     try {
         // JWT is guranteed to exist and be verified as it was processed by a middleware
-        const myJwt = jwt.verify(req.body.token, process.env.JWT_SECRET as jwt.Secret) as jwt.JwtPayload;
+        const auth = req.headers.authorization as string;
+        const myJwt = jwt.verify(auth.split(" ")[1], process.env.JWT_SECRET as jwt.Secret) as jwt.JwtPayload;
         const myOrder = await orders.show(parseInt(req.params.id));
         if (myOrder) {
             if (myJwt.isAdmin || myOrder.user_id == myJwt.id) {
@@ -115,7 +121,8 @@ const indexProducts = async (req: Request, res: Response) => {
 const showProduct = async (req: Request, res: Response) => {
     try {
         // JWT is guranteed to exist and be verified as it was processed by a middleware
-        const myJwt = jwt.verify(req.body.token, process.env.JWT_SECRET as jwt.Secret) as jwt.JwtPayload;
+        const auth = req.headers.authorization as string;
+        const myJwt = jwt.verify(auth.split(" ")[1], process.env.JWT_SECRET as jwt.Secret) as jwt.JwtPayload;
         const myOrder = await orders.show(parseInt(req.params.id));
         if (myOrder) {
             if (myJwt.isAdmin || myOrder.user_id == myJwt.id) {
@@ -144,7 +151,8 @@ const showProduct = async (req: Request, res: Response) => {
 const addProduct = async (req: Request, res: Response) => {
     try {
         // JWT is guranteed to exist and be verified as it was processed by a middleware
-        const myJwt = jwt.verify(req.body.token, process.env.JWT_SECRET as jwt.Secret) as jwt.JwtPayload;
+        const auth = req.headers.authorization as string;
+        const myJwt = jwt.verify(auth.split(" ")[1], process.env.JWT_SECRET as jwt.Secret) as jwt.JwtPayload;
         const myOrder = await orders.show(parseInt(req.params.id));
         if (myOrder) {
             if (myJwt.isAdmin || myOrder.user_id == myJwt.id) {
@@ -182,7 +190,8 @@ const addProduct = async (req: Request, res: Response) => {
 const deleteProduct = async (req: Request, res: Response) => {
     try {
         // JWT is guranteed to exist and be verified as it was processed by a middleware
-        const myJwt = jwt.verify(req.body.token, process.env.JWT_SECRET as jwt.Secret) as jwt.JwtPayload;
+        const auth = req.headers.authorization as string;
+        const myJwt = jwt.verify(auth.split(" ")[1], process.env.JWT_SECRET as jwt.Secret) as jwt.JwtPayload;
         const myOrder = await orders.show(parseInt(req.params.id));
         if (myOrder) {
             if (myJwt.isAdmin || myOrder.user_id == myJwt.id) {

@@ -5,9 +5,12 @@ import jwt from "jsonwebtoken";
 dotenv.config();
 
 const checkLogged = (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    if (req.body.token) {
+    const auth = req.headers.authorization;
+    if (auth) {
         try {
-            jwt.verify(req.body.token, process.env.JWT_SECRET as string);
+            let decode: jwt.JwtPayload;
+            const jwtCode = auth.split(" ")[1];
+            decode = jwt.verify(jwtCode, process.env.JWT_SECRET as string) as jwt.JwtPayload;
             next();
         } catch (_) {
             res.status(403).json({ message: "access denied" });

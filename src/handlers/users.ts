@@ -30,7 +30,8 @@ const create = async (req: Request, res: Response) => {
             const user = await users.getByUsername(req.body.username);
             if (user === undefined) {
                 const result = await users.create({ username: req.body.username, firstName: req.body.firstName, lastName: req.body.lastName, password: req.body.password });
-                res.json(result);
+                const { token, ...userData } = result;
+                res.status(200).json({access_token: token, data: userData});
             } else {
                 res.status(400).json({ message: "There is already a user with this username!" });
             }
@@ -63,8 +64,8 @@ const authenticate = async (req: Request, res: Response) => {
             if (user) {
                 const myUser = (await users.authenticate(user.id, req.body.password)) as AuthorizedUser;
                 if (myUser) {
-                    const { token, ...UserData } = myUser;
-                    res.status(200).json({ message: "success", token: token, data: UserData });
+                    const { token, ...userData } = myUser;
+                    res.status(200).json({ message: "success", access_token: token, data: userData });
                 } else {
                     res.status(400).json({ message: "wrong password" });
                 }

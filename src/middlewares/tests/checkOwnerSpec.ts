@@ -31,13 +31,13 @@ describe("Tests checkOwner Middleware", () => {
     });
 
     it("works when given another user.", async () => {
-        const res = await request.post("/middleware/checkOwner/" + myUser.id).send({ token: otherJwt });
+        const res = await request.post("/middleware/checkOwner/" + myUser.id).set("Authorization", "Bearer " + otherJwt);
         expect(res.statusCode).toBe(403);
         expect(res.body).toEqual({ message: "access denied" });
     });
 
     it("works given a correct token for the owner.", async () => {
-        const res = await request.post("/middleware/checkOwner/" + myUser.id).send({ token: jwt });
+        const res = await request.post("/middleware/checkOwner/" + myUser.id).set("Authorization", "Bearer " + jwt);
         expect(res.statusCode).toBe(200);
         expect(res.body).toEqual({ message: "success" });
     });

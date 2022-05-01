@@ -37,13 +37,13 @@ describe("Test suite for orders endpoints", () => {
         });
 
         it("fails when given a wrong token", async () => {
-            const res = await request.post("/orders").send({ token: "123123" });
+            const res = await request.post("/orders").set("Authorization", "Bearer 123123");
             expect(res.statusCode).toBe(403);
             expect(res.body).toEqual({ message: "access denied" });
         });
 
         it("success with a normal user account", async () => {
-            const res = await request.post("/orders").send({ token: myUser.token });
+            const res = await request.post("/orders").set("Authorization", "Bearer " + myUser.token);
             expect(res.statusCode).toBe(200);
             expect(res.body.message).toBe("success");
             expect(res.body.order.user_id).toBe(myUser.id);
@@ -51,7 +51,7 @@ describe("Test suite for orders endpoints", () => {
         });
 
         it("success with an admin account", async () => {
-            const res = await request.post("/orders").send({ token: myAdminUser.token });
+            const res = await request.post("/orders").set("Authorization", "Bearer " + myAdminUser.token);
             expect(res.statusCode).toBe(200);
             expect(res.body.message).toBe("success");
             expect(res.body.order.user_id).toBe(myAdminUser.id);
@@ -67,20 +67,20 @@ describe("Test suite for orders endpoints", () => {
         });
 
         it("fails when given a wrong token", async () => {
-            const res = await request.get("/orders").send({ token: "123123" });
+            const res = await request.get("/orders").set("Authorization", "Bearer 123123");
             expect(res.statusCode).toBe(403);
             expect(res.body).toEqual({ message: "access denied" });
         });
 
         it("returns only user orders for normal users", async () => {
-            const res = await request.get("/orders").send({ token: myUser.token });
+            const res = await request.get("/orders").set("Authorization", "Bearer " + myUser.token);
             expect(res.statusCode).toBe(200);
             expect(Array.isArray(res.body)).toBe(true);
             expect(res.body.length).toBe(1);
         });
 
         it("returns all orders for an admin account", async () => {
-            const res = await request.get("/orders").send({ token: myAdminUser.token });
+            const res = await request.get("/orders").set("Authorization", "Bearer " + myAdminUser.token);
             expect(res.statusCode).toBe(200);
             expect(Array.isArray(res.body)).toBe(true);
             expect(res.body.length).toBeGreaterThan(1);
@@ -95,25 +95,25 @@ describe("Test suite for orders endpoints", () => {
         });
 
         it("fails when given a wrong token", async () => {
-            const res = await request.get("/orders/" + myUserOrder.id).send({ token: "123123" });
+            const res = await request.get("/orders/" + myUserOrder.id).set("Authorization", "Bearer 123123");
             expect(res.statusCode).toBe(403);
             expect(res.body).toEqual({ message: "access denied" });
         });
 
         it("responds correctly to wrong orderId", async () => {
-            const res = await request.get("/orders/123123").send({ token: myUser.token });
+            const res = await request.get("/orders/123123").set("Authorization", "Bearer " + myUser.token);
             expect(res.statusCode).toBe(400);
             expect(res.body.message).toBe("order doesn't exist");
         });
 
         it("responds correctly to unauthorized access for normal users", async () => {
-            const res = await request.get("/orders/" + myAdminOrder.id).send({ token: myUser.token });
+            const res = await request.get("/orders/" + myAdminOrder.id).set("Authorization", "Bearer " + myUser.token);
             expect(res.statusCode).toBe(403);
             expect(res.body.message).toBe("access denied");
         });
 
         it("correctly shows an order to his normal account owner", async () => {
-            const res = await request.get("/orders/" + myUserOrder.id).send({ token: myUser.token });
+            const res = await request.get("/orders/" + myUserOrder.id).set("Authorization", "Bearer " + myUser.token);
             expect(res.statusCode).toBe(200);
             expect(res.body.message).toBe("success");
             expect(res.body.order.status).toBe("active");
@@ -121,7 +121,7 @@ describe("Test suite for orders endpoints", () => {
         });
 
         it("correctly shows other users' ordres to admin account", async () => {
-            const res = await request.get("/orders/" + myUserOrder.id).send({ token: myAdminUser.token });
+            const res = await request.get("/orders/" + myUserOrder.id).set("Authorization", "Bearer " + myAdminUser.token);
             expect(res.statusCode).toBe(200);
             expect(res.body.message).toBe("success");
             expect(res.body.order.status).toBe("active");
@@ -137,25 +137,25 @@ describe("Test suite for orders endpoints", () => {
         });
 
         it("fails when given a wrong token", async () => {
-            const res = await request.post("/orders/" + myUserOrder.id + "/complete").send({ token: "123123" });
+            const res = await request.post("/orders/" + myUserOrder.id + "/complete").set("Authorization", "Bearer 123123");
             expect(res.statusCode).toBe(403);
             expect(res.body).toEqual({ message: "access denied" });
         });
 
         it("responds correctly to wrong orderId", async () => {
-            const res = await request.post("/orders/123123/complete").send({ token: myUser.token });
+            const res = await request.post("/orders/123123/complete").set("Authorization", "Bearer " + myUser.token);
             expect(res.statusCode).toBe(400);
             expect(res.body.message).toBe("order doesn't exist");
         });
 
         it("responds correctly to unauthorized access for normal users", async () => {
-            const res = await request.post("/orders/" + myAdminOrder.id + "/complete").send({ token: myUser.token });
+            const res = await request.post("/orders/" + myAdminOrder.id + "/complete").set("Authorization", "Bearer " + myUser.token);
             expect(res.statusCode).toBe(403);
             expect(res.body.message).toBe("access denied");
         });
 
         it("correctly completes an order for a normal user which he owns", async () => {
-            const res = await request.post("/orders/" + myUserOrder.id + "/complete").send({ token: myUser.token });
+            const res = await request.post("/orders/" + myUserOrder.id + "/complete").set("Authorization", "Bearer " + myUser.token);
             expect(res.statusCode).toBe(200);
             expect(res.body.message).toBe("success");
             expect(res.body.order.status).toBe("completed");
@@ -164,7 +164,7 @@ describe("Test suite for orders endpoints", () => {
         });
 
         it("correctly completes an order for admin user which doesn't own", async () => {
-            const res = await request.post("/orders/" + myUserOrder.id + "/complete").send({ token: myAdminUser.token });
+            const res = await request.post("/orders/" + myUserOrder.id + "/complete").set("Authorization", "Bearer " + myAdminUser.token);
             expect(res.statusCode).toBe(200);
             expect(res.body.message).toBe("success");
             expect(res.body.order.status).toBe("completed");
@@ -180,25 +180,25 @@ describe("Test suite for orders endpoints", () => {
         });
 
         it("fails when given a wrong token", async () => {
-            const res = await request.delete("/orders/" + myUserOrder.id).send({ token: "123123" });
+            const res = await request.delete("/orders/" + myUserOrder.id).set("Authorization", "Bearer 123123");
             expect(res.statusCode).toBe(403);
             expect(res.body).toEqual({ message: "access denied" });
         });
 
         it("responds correctly to wrong orderId", async () => {
-            const res = await request.delete("/orders/123123").send({ token: myUser.token });
+            const res = await request.delete("/orders/123123").set("Authorization", "Bearer " + myUser.token);
             expect(res.statusCode).toBe(400);
             expect(res.body.message).toBe("order doesn't exist");
         });
 
         it("responds correctly to unauthorized access for normal users", async () => {
-            const res = await request.delete("/orders/" + myAdminOrder.id).send({ token: myUser.token });
+            const res = await request.delete("/orders/" + myAdminOrder.id).set("Authorization", "Bearer " + myUser.token);
             expect(res.statusCode).toBe(403);
             expect(res.body.message).toBe("access denied");
         });
 
         it("correctly deletes an order for a normal user which he owns", async () => {
-            const res = await request.delete("/orders/" + myUserOrder.id).send({ token: myUser.token });
+            const res = await request.delete("/orders/" + myUserOrder.id).set("Authorization", "Bearer " + myUser.token);
             expect(res.statusCode).toBe(200);
             expect(res.body.message).toBe("success");
             expect(res.body.deletedOrder.user_id).toBe(myUser.id);
@@ -206,7 +206,7 @@ describe("Test suite for orders endpoints", () => {
         });
 
         it("correctly completes an order for admin user which doesn't own", async () => {
-            const res = await request.delete("/orders/" + myUserOrder.id).send({ token: myAdminUser.token });
+            const res = await request.delete("/orders/" + myUserOrder.id).set("Authorization", "Bearer " + myAdminUser.token);
             expect(res.statusCode).toBe(200);
             expect(res.body.message).toBe("success");
             expect(res.body.deletedOrder.user_id).toBe(myUser.id);
@@ -222,43 +222,43 @@ describe("Test suite for orders endpoints", () => {
         });
 
         it("fails when given a wrong token", async () => {
-            const res = await request.post("/orders/" + myUserOrder.id + "/products").send({ token: "123123" });
+            const res = await request.post("/orders/" + myUserOrder.id + "/products").set("Authorization", "Bearer 123123");
             expect(res.statusCode).toBe(403);
             expect(res.body).toEqual({ message: "access denied" });
         });
 
         it("responds correctly to wrong orderId", async () => {
-            const res = await request.post("/orders/123123/products").send({ token: myUser.token });
+            const res = await request.post("/orders/123123/products").set("Authorization", "Bearer " + myUser.token);
             expect(res.statusCode).toBe(400);
             expect(res.body.message).toBe("order doesn't exist");
         });
 
         it("responds correctly to unauthorized access for normal users", async () => {
-            const res = await request.post("/orders/" + myAdminOrder.id + "/products").send({ token: myUser.token });
+            const res = await request.post("/orders/" + myAdminOrder.id + "/products").set("Authorization", "Bearer " + myUser.token);
             expect(res.statusCode).toBe(403);
             expect(res.body.message).toBe("access denied");
         });
 
         it("responds correctly to missing parameters", async () => {
-            const res = await request.post("/orders/" + myUserOrder.id + "/products").send({ token: myUser.token });
+            const res = await request.post("/orders/" + myUserOrder.id + "/products").set("Authorization", "Bearer " + myUser.token);
             expect(res.statusCode).toBe(400);
             expect(res.body.message).toBe("missing parameters");
         });
 
         it("responds correctly with a wrong product id", async () => {
-            const res = await request.post("/orders/" + myUserOrder.id + "/products").send({ token: myUser.token, product_id: 123123, quantity: 69 });
+            const res = await request.post("/orders/" + myUserOrder.id + "/products").set("Authorization", "Bearer " + myUser.token).send({ product_id: 123123, quantity: 69 });
             expect(res.statusCode).toBe(400);
             expect(res.body.message).toBe("product doesn't exist");
         });
 
         it("responds correctly with a correct product id", async () => {
-            const res = await request.post("/orders/" + myUserOrder.id + "/products").send({ token: myUser.token, product_id: myProduct.id, quantity: 69 });
+            const res = await request.post("/orders/" + myUserOrder.id + "/products").set("Authorization", "Bearer " + myUser.token).send({ product_id: myProduct.id, quantity: 69 });
             expect(res.statusCode).toBe(200);
             expect(res.body.message).toBe("success");
         });
 
         it("responds correctly to existing product in the order", async () => {
-            const res = await request.post("/orders/" + myUserOrder.id + "/products").send({ token: myUser.token, product_id: myProduct.id, quantity: 69 });
+            const res = await request.post("/orders/" + myUserOrder.id + "/products").set("Authorization", "Bearer " + myUser.token).send({ product_id: myProduct.id, quantity: 69 });
             expect(res.statusCode).toBe(400);
             expect(res.body.message).toBe("product is already added to this order");
         });
@@ -272,25 +272,25 @@ describe("Test suite for orders endpoints", () => {
         });
 
         it("fails when given a wrong token", async () => {
-            const res = await request.get("/orders/" + myUserOrder.id + "/products").send({ token: "123123" });
+            const res = await request.get("/orders/" + myUserOrder.id + "/products").set("Authorization", "Bearer 123123");
             expect(res.statusCode).toBe(403);
             expect(res.body).toEqual({ message: "access denied" });
         });
 
         it("responds correctly to wrong orderId", async () => {
-            const res = await request.get("/orders/123123/products").send({ token: myUser.token });
+            const res = await request.get("/orders/123123/products").set("Authorization", "Bearer " + myUser.token);
             expect(res.statusCode).toBe(400);
             expect(res.body.message).toBe("order doesn't exist");
         });
 
         it("responds correctly to unauthorized access for normal users", async () => {
-            const res = await request.get("/orders/" + myAdminOrder.id + "/products").send({ token: myUser.token });
+            const res = await request.get("/orders/" + myAdminOrder.id + "/products").set("Authorization", "Bearer " + myUser.token);
             expect(res.statusCode).toBe(403);
             expect(res.body.message).toBe("access denied");
         });
 
         it("responds correctly to normal user's order owner", async () => {
-            const res = await request.get("/orders/" + myUserOrder.id + "/products").send({ token: myUser.token });
+            const res = await request.get("/orders/" + myUserOrder.id + "/products").set("Authorization", "Bearer " + myUser.token);
             expect(res.statusCode).toBe(200);
             expect(Array.isArray(res.body)).toBe(true);
             expect(res.body[0].id).toBe(myProduct.id);
@@ -298,7 +298,7 @@ describe("Test suite for orders endpoints", () => {
         });
 
         it("responds correctly to other users' orders for admin", async () => {
-            const res = await request.get("/orders/" + myUserOrder.id + "/products").send({ token: myAdminUser.token });
+            const res = await request.get("/orders/" + myUserOrder.id + "/products").set("Authorization", "Bearer " + myAdminUser.token);
             expect(res.statusCode).toBe(200);
             expect(Array.isArray(res.body)).toBe(true);
             expect(res.body[0].id).toBe(myProduct.id);
@@ -314,37 +314,37 @@ describe("Test suite for orders endpoints", () => {
         });
 
         it("fails when given a wrong token", async () => {
-            const res = await request.get("/orders/" + myUserOrder.id + "/products/123123").send({ token: "123123" });
+            const res = await request.get("/orders/" + myUserOrder.id + "/products/123123").set("Authorization", "Bearer 123123");
             expect(res.statusCode).toBe(403);
             expect(res.body).toEqual({ message: "access denied" });
         });
 
         it("responds correctly to wrong orderId", async () => {
-            const res = await request.get("/orders/123123/products/123123").send({ token: myUser.token });
+            const res = await request.get("/orders/123123/products/123123").set("Authorization", "Bearer " + myUser.token);
             expect(res.statusCode).toBe(400);
             expect(res.body.message).toBe("order doesn't exist");
         });
 
         it("responds correctly to unauthorized access for normal users", async () => {
-            const res = await request.get("/orders/" + myAdminOrder.id + "/products/123123").send({ token: myUser.token });
+            const res = await request.get("/orders/" + myAdminOrder.id + "/products/123123").set("Authorization", "Bearer " + myUser.token);
             expect(res.statusCode).toBe(403);
             expect(res.body.message).toBe("access denied");
         });
 
         it("responds correctly to wrong product id", async () => {
-            const res = await request.get("/orders/" + myUserOrder.id + "/products/123123").send({ token: myUser.token });
+            const res = await request.get("/orders/" + myUserOrder.id + "/products/123123").set("Authorization", "Bearer " + myUser.token);
             expect(res.statusCode).toBe(400);
             expect(res.body.message).toBe("product doesn't exist");
         });
 
         it("responds correctly to a correct product id which is not added to the order", async () => {
-            const res = await request.get("/orders/" + myUserOrder.id + "/products/" + mySecondProduct.id).send({ token: myUser.token });
+            const res = await request.get("/orders/" + myUserOrder.id + "/products/" + mySecondProduct.id).set("Authorization", "Bearer " + myUser.token);
             expect(res.statusCode).toBe(400);
             expect(res.body.message).toBe("product isn't added to this order");
         });
 
         it("responds correctly to a correct product id which exists in the order", async () => {
-            const res = await request.get("/orders/" + myUserOrder.id + "/products/" + myProduct.id).send({ token: myUser.token });
+            const res = await request.get("/orders/" + myUserOrder.id + "/products/" + myProduct.id).set("Authorization", "Bearer " + myUser.token);
             expect(res.statusCode).toBe(200);
             expect(res.body.message).toBe("success");
             expect(res.body.product).toEqual({ id: myProduct.id, quantity: 69 });
@@ -359,37 +359,37 @@ describe("Test suite for orders endpoints", () => {
         });
 
         it("fails when given a wrong token", async () => {
-            const res = await request.delete("/orders/" + myUserOrder.id + "/products/123123").send({ token: "123123" });
+            const res = await request.delete("/orders/" + myUserOrder.id + "/products/123123").set("Authorization", "Bearer 123123");
             expect(res.statusCode).toBe(403);
             expect(res.body).toEqual({ message: "access denied" });
         });
 
         it("responds correctly to wrong orderId", async () => {
-            const res = await request.delete("/orders/123123/products/123123").send({ token: myUser.token });
+            const res = await request.delete("/orders/123123/products/123123").set("Authorization", "Bearer " + myUser.token);
             expect(res.statusCode).toBe(400);
             expect(res.body.message).toBe("order doesn't exist");
         });
 
         it("responds correctly to unauthorized access for normal users", async () => {
-            const res = await request.delete("/orders/" + myAdminOrder.id + "/products/123123").send({ token: myUser.token });
+            const res = await request.delete("/orders/" + myAdminOrder.id + "/products/123123").set("Authorization", "Bearer " + myUser.token);
             expect(res.statusCode).toBe(403);
             expect(res.body.message).toBe("access denied");
         });
 
         it("responds correctly to wrong product id", async () => {
-            const res = await request.delete("/orders/" + myUserOrder.id + "/products/123123").send({ token: myUser.token });
+            const res = await request.delete("/orders/" + myUserOrder.id + "/products/123123").set("Authorization", "Bearer " + myUser.token);
             expect(res.statusCode).toBe(400);
             expect(res.body.message).toBe("product doesn't exist");
         });
 
         it("responds correctly to a correct product id that isn't added to the order", async () => {
-            const res = await request.delete("/orders/" + myUserOrder.id + "/products/" + mySecondProduct.id).send({ token: myUser.token });
+            const res = await request.delete("/orders/" + myUserOrder.id + "/products/" + mySecondProduct.id).set("Authorization", "Bearer " + myUser.token);
             expect(res.statusCode).toBe(400);
             expect(res.body.message).toBe("product isn't added to this order");
         });
 
         it("responds correctly to a correct product id that exists in the order", async () => {
-            const res = await request.delete("/orders/" + myUserOrder.id + "/products/" + myProduct.id).send({ token: myUser.token });
+            const res = await request.delete("/orders/" + myUserOrder.id + "/products/" + myProduct.id).set("Authorization", "Bearer " + myUser.token);
             expect(res.statusCode).toBe(200);
             expect(res.body.message).toBe("success");
             expect(res.body.deletedProduct).toEqual({ id: myProduct.id, quantity: 69 });

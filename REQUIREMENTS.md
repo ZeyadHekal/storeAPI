@@ -14,7 +14,7 @@ A company stakeholders want to create an online storefront to showcase their gre
 - Create:   [POST]      '/users'     args: {firstName: string, lastName: string, password: string}
 - Delete:   [DELETE]    '/users/:id'        [owner or admin]
 - Authenticate:
-            [POST]      '/users/:id/authenticate' (password: string)
+            [POST]      '/users/:id/authenticate' {password: string}
 
 #### Orders
 - Index :   (get all system orders for admin or user's orders otherwise)

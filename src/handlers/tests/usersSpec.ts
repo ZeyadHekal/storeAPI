@@ -39,13 +39,13 @@ describe("Test suite for users route", () => {
         });
 
         it("Responds with 403 to unauthorized access", async () => {
-            const res = await request.get("/users").send({ token: "123" });
+            const res = await request.get("/users").set("Authorization", "Bearer 123");
             expect(res.statusCode).toEqual(403);
             expect(res.body).toEqual({ message: "access denied" });
         });
 
         it("Shows users for authorized admins", async () => {
-            const res = await request.get("/users").send({ token: adminJwt });
+            const res = await request.get("/users").set("Authorization", "Bearer " + adminJwt);
             expect(res.statusCode).toEqual(200);
             expect(res.body).toEqual(usersOnStart);
         });
@@ -66,12 +66,12 @@ describe("Test suite for users route", () => {
 
         it("creates a user if username is not used", async () => {
             const res = await request.post("/users").send({ username: test_username, password: test_password, firstName: "Zeyad", lastName: "Hekal" });
-            testId = res.body.id;
-            testJwt = res.body.token;
+            testId = res.body.data.id;
+            testJwt = res.body.access_token;
             expect(res.statusCode).toEqual(200);
-            expect(res.body.username).toBe(test_username);
-            expect(res.body.firstName).toBe("Zeyad");
-            expect(res.body.lastName).toBe("Hekal");
+            expect(res.body.data.username).toBe(test_username);
+            expect(res.body.data.firstName).toBe("Zeyad");
+            expect(res.body.data.lastName).toBe("Hekal");
         });
     });
 
@@ -83,20 +83,20 @@ describe("Test suite for users route", () => {
         });
 
         it("Responds correctly to a not authorized request", async () => {
-            const res = await request.get("/users/" + testId).send({ token: "123" });
+            const res = await request.get("/users/" + testId).set("Authorization", "Bearer 123");
             expect(res.statusCode).toEqual(403);
             expect(res.body).toEqual({ message: "access denied" });
         });
 
         it("Responds correctly to an authorized request (owner)", async () => {
-            const res = await request.get("/users/" + testId).send({ token: testJwt });
+            const res = await request.get("/users/" + testId).set("Authorization", "Bearer " + testJwt);
             expect(res.statusCode).toEqual(200);
             expect(res.body.message).toBe("success");
             expect(res.body.user).toEqual({ id: testId, username: test_username, firstName: "Zeyad", lastName: "Hekal", isAdmin: false });
         });
 
         it("Responds correctly to an authorized request (admin)", async () => {
-            const res = await request.get("/users/" + testId).send({ token: adminJwt });
+            const res = await request.get("/users/" + testId).set("Authorization", "Bearer " + adminJwt);
             expect(res.statusCode).toEqual(200);
             expect(res.body.message).toBe("success");
             expect(res.body.user).toEqual({ id: testId, username: test_username, firstName: "Zeyad", lastName: "Hekal", isAdmin: false });
@@ -104,7 +104,7 @@ describe("Test suite for users route", () => {
 
         // Only for admins as normal users can only show their data
         it("Responds correctly to a wrong user id", async () => {
-            const res = await request.get("/users/123123123").send({ token: adminJwt });
+            const res = await request.get("/users/123123123").set("Authorization", "Bearer " + adminJwt);
             expect(res.statusCode).toEqual(400);
             expect(res.body).toEqual({ message: "user doesn't exist" });
         });
@@ -118,13 +118,13 @@ describe("Test suite for users route", () => {
         });
 
         it("Responds correctly to a not authorized request", async () => {
-            const res = await request.delete("/users/" + testId).send({ token: "123" });
+            const res = await request.delete("/users/" + testId).set("Authorization", "Bearer 123");
             expect(res.statusCode).toEqual(403);
             expect(res.body).toEqual({ message: "access denied" });
         });
 
         it("Responds correctly to an authorized request (owner)", async () => {
-            const res = await request.delete("/users/" + testId).send({ token: testJwt });
+            const res = await request.delete("/users/" + testId).set("Authorization", "Bearer " + testJwt);
             expect(res.statusCode).toEqual(200);
             expect(res.body.message).toBe("success");
             expect(res.body.deletedUser).toEqual({ id: testId, username: test_username, firstName: "Zeyad", lastName: "Hekal", isAdmin: false });
@@ -134,7 +134,7 @@ describe("Test suite for users route", () => {
         });
 
         it("Responds correctly to an authorized request (admin)", async () => {
-            const res = await request.delete("/users/" + testId).send({ token: adminJwt });
+            const res = await request.delete("/users/" + testId).set("Authorization", "Bearer " + adminJwt);
             expect(res.statusCode).toEqual(200);
             expect(res.body.message).toBe("success");
             expect(res.body.deletedUser).toEqual({ id: testId, username: test_username, firstName: "Zeyad", lastName: "Hekal", isAdmin: false });
@@ -145,7 +145,7 @@ describe("Test suite for users route", () => {
 
         // Only for admins as normal users can only delete their data
         it("Responds correctly to a wrong user id", async () => {
-            const res = await request.delete("/users/123123123").send({ token: adminJwt });
+            const res = await request.delete("/users/123123123").set("Authorization", "Bearer " + adminJwt);
             expect(res.statusCode).toEqual(400);
             expect(res.body).toEqual({ message: "user doesn't exist" });
         });

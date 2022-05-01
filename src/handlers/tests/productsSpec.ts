@@ -36,19 +36,19 @@ describe("Test suite for products endpoints", () => {
         });
 
         it("replies to unauthorized access correctly", async () => {
-            const res = await request.post("/products").send({ token: "123123" });
+            const res = await request.post("/products").set("Authorization", "Bearer 123123");
             expect(res.statusCode).toBe(403);
             expect(res.body).toEqual({ message: "access denied" });
         });
 
         it("replies to missing parameters correctly", async () => {
-            const res = await request.post("/products").send({ token: admin_jwt });
+            const res = await request.post("/products").set("Authorization", "Bearer " + admin_jwt);
             expect(res.statusCode).toBe(400);
             expect(res.body).toEqual({ message: "missing parameters", parameters: ["name", "price", "category"] });
         });
 
         it("replies to valid requests", async () => {
-            const res = await request.post("/products").send({ token: admin_jwt, name: "iPhone 69", price: 696969, category: "mobiles" });
+            const res = await request.post("/products").set("Authorization", "Bearer " + admin_jwt).send({ name: "iPhone 69", price: 696969, category: "mobiles" });
             expect(res.statusCode).toBe(200);
             expect(res.body.message).toBe("success");
             product_id = res.body.product.id;
@@ -98,19 +98,19 @@ describe("Test suite for products endpoints", () => {
         });
 
         it("replies to unauthorized access correctly", async () => {
-            const res = await request.delete("/products/123").send({ token: "123123" });
+            const res = await request.delete("/products/123").set("Authorization", "Bearer 123123");
             expect(res.statusCode).toBe(403);
             expect(res.body).toEqual({ message: "access denied" });
         });
 
         it("replies to wrong id", async () => {
-            const res = await request.delete("/products/123").send({ token: admin_jwt });
+            const res = await request.delete("/products/123").set("Authorization", "Bearer " + admin_jwt);
             expect(res.statusCode).toBe(400);
             expect(res.body).toEqual({ message: "product not found" });
         });
 
         it("replies to valid requests", async () => {
-            const res = await request.delete("/products/" + product_id).send({ token: admin_jwt });
+            const res = await request.delete("/products/" + product_id).set("Authorization", "Bearer " + admin_jwt);
             expect(res.statusCode).toBe(200);
             expect(res.body.message).toBe("success");
             expect(res.body.deletedProduct).toEqual({ id: product_id, name: "iPhone 69", price: 696969, category: "mobiles" });

@@ -38,13 +38,13 @@ describe("Tests checkAdmin Middleware", () => {
     });
 
     it("works when invalid token has been passed.", async () => {
-        const res = await request.post("/middleware/checkAdmin").send({ token: "abcd" });
+        const res = await request.post("/middleware/checkAdmin").set("Authorization", "Bearer abc");
         expect(res.statusCode).toBe(403);
         expect(res.body).toEqual({ message: "access denied" });
     });
 
     it("works given a correct token.", async () => {
-        const res = await request.post("/middleware/checkAdmin").send({ token: jwt });
+        const res = await request.post("/middleware/checkAdmin").set("Authorization", "Bearer " + jwt);
         expect(res.statusCode).toBe(200);
         expect(res.body).toEqual({ message: "success" });
     });

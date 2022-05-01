@@ -29,7 +29,7 @@ describe("Tests checkLogged Middleware", () => {
     });
 
     it("works given a correct token.", async () => {
-        const res = await request.post("/middleware/checkLogged").send({ token: jwt });
+        const res = await request.post("/middleware/checkLogged").set("Authorization", "Bearer " + jwt);
         expect(res.statusCode).toBe(200);
         expect(res.body).toEqual({ message: "success" });
     });

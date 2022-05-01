@@ -5,14 +5,17 @@ import jwt from "jsonwebtoken";
 dotenv.config();
 
 const checkOwnerOrAdmin = (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    if (req.body.token) {
+    const auth = req.headers.authorization;
+    if (auth) {
         try {
-            const decode = jwt.verify(req.body.token, process.env.JWT_SECRET as string) as jwt.JwtPayload;
+            let decode: jwt.JwtPayload;
+            const jwtCode = auth.split(" ")[1];
+            decode = jwt.verify(jwtCode, process.env.JWT_SECRET as string) as jwt.JwtPayload;
             const user_id = req.params.id;
             if (decode && (decode.id === parseInt(user_id) || decode.isAdmin)) {
                 next();
             } else {
-                res.status(403).json({ message: "access denied" });
+                throw new Error();
             }
         } catch (_) {
             res.status(403).json({ message: "access denied" });
